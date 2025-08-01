@@ -7,8 +7,10 @@
             @csrf
             @method('PUT')
             @include('admin.mobil.form')
-            <button type="submit" class="btn btn-primary">Update</button>
-            <a href="{{ route('admin.mobil.index') }}" class="btn btn-dark">Kembali</a>
+            <div class="mt-3">
+                <button type="submit" class="btn btn-primary">Update</button>
+                <a href="{{ route('admin.mobil.index') }}" class="btn btn-dark">Kembali</a>
+            </div>
         </form>
     </div>
 @endsection

@@ -1,0 +1,58 @@
+ Schema::create('users', function (Blueprint $table) {
+            $table->id();
+            $table->string('name');
+            $table->string('email')->unique();
+            $table->string('no_telp', 15);
+            $table->string('divisi', 100);
+            $table->enum('peran', ['admin', 'karyawan']);
+            $table->text('foto')->nullable();
+            $table->timestamp('email_verified_at')->nullable();
+            $table->string('password');
+            $table->rememberToken();
+            $table->timestamps();
+        });
+ Schema::create('merk', function (Blueprint $table) {
+            $table->id();
+            $table->string('nama_merk', 50);
+            $table->timestamps();
+        });
+
+         Schema::create('jenis', function (Blueprint $table) {
+            $table->id();
+            $table->string('nama_jenis', 50);
+            $table->timestamps();
+        });
+
+         Schema::create('mobil', function (Blueprint $table) {
+            $table->id();
+            $table->string('plat_mobil', 15)->unique();
+
+            $table->unsignedBigInteger('id_merk');
+            $table->unsignedBigInteger('id_jenis');
+
+            $table->string('model', 200);
+            $table->integer('kapasitas');
+            $table->text('foto_mobil')->nullable();
+            $table->text('catatan_lain')->nullable();
+            $table->enum('status_mobil', ['Tersedia', 'Tidak Tersedia']);
+            $table->timestamps();
+
+            // Foreign Key Constraints
+            $table->foreign('id_merk')->references('id')->on('merk')->onDelete('cascade');
+            $table->foreign('id_jenis')->references('id')->on('jenis')->onDelete('cascade');
+        });
+ Schema::create('peminjaman', function (Blueprint $table) {
+            $table->id();
+            $table->unsignedBigInteger('id_user');
+            $table->unsignedBigInteger('id_mobil');
+
+            $table->dateTime('tanggal_pinjam');
+            $table->dateTime('tanggal_pengembalian')->nullable();
+            $table->enum('status_peminjaman', ['diajukan', 'disetujui', 'digunakan', 'dikembalikan', 'ditolak'])->default('diajukan');
+            $table->text('bukti_pengembalian')->nullable();
+            $table->timestamps();
+
+            // Foreign Key Constraints
+            $table->foreign('id_user')->references('id')->on('users')->onDelete('cascade');
+            $table->foreign('id_mobil')->references('id')->on('mobil')->onDelete('cascade');
+        });

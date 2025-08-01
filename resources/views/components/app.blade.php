@@ -11,6 +11,7 @@
     <link href="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/style.min.css" rel="stylesheet" />
     <link href="{{ asset('/css/styles.css') }}" rel="stylesheet" />
     <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
+    @stack('css')
 </head>
 
 <body class="sb-nav-fixed">
@@ -20,7 +21,7 @@
             @include('components.sidebar')
             <div class="sb-sidenav-footer">
                 <div class="small">Logged in as:</div>
-                Start Bootstrap
+                {{ Auth::user()->peran }}
             </div>
             </nav>
         </div>
@@ -50,7 +51,7 @@
                 </div>
             </main>
             <footer class="py-4 bg-light mt-auto">
-                <div class="container-fluid px-4">
+                {{-- <div class="container-fluid px-4">
                     <div class="d-flex align-items-center justify-content-between small">
                         <div class="text-muted">Copyright &copy; Your Website 2023</div>
                         <div>
@@ -59,7 +60,7 @@
                             <a href="#">Terms &amp; Conditions</a>
                         </div>
                     </div>
-                </div>
+                </div> --}}
             </footer>
         </div>
     </div>
@@ -72,6 +73,8 @@
     <script src="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/umd/simple-datatables.min.js"
         crossorigin="anonymous"></script>
     <script src="{{ asset('/js/datatables-simple-demo.js') }}"></script>
+
+    @stack('scripts')
 </body>
 
 </html>

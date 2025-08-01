@@ -14,33 +14,60 @@
                   Dashboard
               </a>
               @if (Auth::user()->peran === 'admin')
+                  @php
+                      if (Request::is('admin/merk*') | Request::is('admin/mobil*') | Request::is('admin/jenis*')) {
+                          $active = 'active';
+                      } else {
+                          $active = '';
+                      }
+                  @endphp
+                  <a class="nav-link {{ $active }} collapsed" href="#" data-bs-toggle="collapse"
+                      data-bs-target="#collapseLayouts" aria-expanded="false" aria-controls="collapseLayouts">
+                      <div class="sb-nav-link-icon"><i class="fas fa-columns"></i></div>
+                      Mobil
+                      <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                  </a>
+                  <div class="collapse" id="collapseLayouts" aria-labelledby="headingOne"
+                      data-bs-parent="#sidenavAccordion">
+                      <nav class="sb-sidenav-menu-nested nav">
+                          <a class="nav-link {{ Request::is('admin/jenis*') ? 'active' : '' }}"
+                              href="{{ route('admin.jenis.index') }}">
+                              <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
+                              Jenis
+                          </a>
 
-              <a class="nav-link {{ Request::is('admin/jenis*') ? 'active' : '' }}"
-                  href="{{ route('admin.jenis.index') }}">
-                  <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
-                  Jenis
-              </a>
+                          <a class="nav-link {{ Request::is('admin/merk*') ? 'active' : '' }}"
+                              href="{{ route('admin.merk.index') }}">
+                              <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
+                              Merk
+                          </a>
+                          <a class="nav-link {{ Request::is('admin/mobil*') ? 'active' : '' }}"
+                              href="{{ route('admin.mobil.index') }}">
+                              <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
+                              List Mobil
+                          </a>
+                      </nav>
+                  </div>
 
-              <a class="nav-link {{ Request::is('admin/merk*') ? 'active' : '' }}"
-                  href="{{ route('admin.merk.index') }}">
-                  <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
-                  Merk
-              </a>
-              <a class="nav-link {{ Request::is('admin/mobil*') ? 'active' : '' }}"
-                  href="{{ route('admin.mobil.index') }}">
-                  <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
-                  Mobil
-              </a>
+                  <a class="nav-link {{ Request::is('admin/peminjaman*') ? 'active' : '' }}"
+                      href="{{ route('admin.peminjaman.index') }}">
+                      <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
+                      Pengajuan Peminjaman
+                  </a>
+                  <a class="nav-link {{ Request::is('adawdawdawmin/peminjaman*') ? 'active' : '' }}" href="#">
+                      <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
+                      Riwayat Peminjaman
+                  </a>
               @else
-                <a class="nav-link {{ Request::is('admin/mobil*') ? 'active' : '' }}"
-                  href="#">
-                  <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
-                  Peminjaman
-              </a>
+                  <a class="nav-link {{ Request::is('karyawan/peminjaman*') ? 'active' : '' }}"
+                      href="{{ route('karyawan.peminjaman.index') }}">
+                      <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
+                      Peminjaman
+                  </a>
               @endif
 
-
-              {{-- <div class="sb-sidenav-menu-heading">Interface</div>
+              {{--
+              <div class="sb-sidenav-menu-heading">Interface</div>
               <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseLayouts"
                   aria-expanded="false" aria-controls="collapseLayouts">
                   <div class="sb-nav-link-icon"><i class="fas fa-columns"></i></div>
@@ -59,7 +86,7 @@
                   <div class="sb-nav-link-icon"><i class="fas fa-book-open"></i></div>
                   Pages
                   <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
-              </a> --}}
+              </a>
               <div class="collapse" id="collapsePages" aria-labelledby="headingTwo" data-bs-parent="#sidenavAccordion">
                   <nav class="sb-sidenav-menu-nested nav accordion" id="sidenavAccordionPages">
                       <a class="nav-link collapsed" href="#" data-bs-toggle="collapse"
@@ -89,7 +116,7 @@
                           </nav>
                       </div>
                   </nav>
-              </div>
+              </div> --}}
               {{-- <div class="sb-sidenav-menu-heading">Addons</div>
               <a class="nav-link" href="charts.html">
                   <div class="sb-nav-link-icon"><i class="fas fa-chart-area"></i></div>
@@ -101,3 +128,4 @@
               </a> --}}
           </div>
       </div>
+  </nav>

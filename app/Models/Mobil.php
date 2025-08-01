@@ -23,8 +23,8 @@ class Mobil extends Model
         return $this->belongsTo(Jenis::class, 'id_jenis');
     }
 
-    // public function peminjamans()
-    // {
-    //     return $this->hasMany(Peminjaman::class, 'id_mobil');
-    // }
+    public function peminjamans()
+    {
+        return $this->hasMany(Peminjaman::class, 'id_mobil');
+    }
 }

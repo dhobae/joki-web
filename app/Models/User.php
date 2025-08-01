@@ -42,8 +42,8 @@ class User extends Authenticatable
         ];
     }
 
-    // public function peminjamans()
-    // {
-    //     return $this->hasMany(Peminjaman::class, 'id_user');
-    // }
+    public function peminjamans()
+    {
+        return $this->hasMany(Peminjaman::class, 'id_user');
+    }
 }

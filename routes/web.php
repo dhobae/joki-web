@@ -1,18 +1,18 @@
 <?php
 
-use App\Http\Controllers\Admin\MobilController;
-use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Admin\JenisController;
 use App\Http\Controllers\Admin\MerkController;
+use App\Http\Controllers\Admin\MobilController;
+use App\Http\Controllers\Admin\PeminjamanController as AdminPeminjamanController;
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\PeminjamanController;
 use Illuminate\Support\Facades\Route;
 
 // Route::get("/", function () {
 //     return view('components.app');
 // })->middleware('auth');
 
-
-Route::redirect('/', '/login');
-
+Route::view('/', 'home');
 
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login')->middleware('guest');
 Route::post('/login', [AuthController::class, 'login']);
@@ -20,21 +20,39 @@ Route::get('/register', [AuthController::class, 'showRegisterForm'])->middleware
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
+// admin
 Route::middleware(['auth', 'peran:admin'])->prefix('admin')->name('admin.')->group(function () {
+
+    Route::get('dashboard', function () {
+        return view('admin.dashboard');
+    })->middleware(['auth', 'peran:admin'])->name('dashboard');
+
     Route::resource('mobil', MobilController::class);
     Route::resource('jenis', JenisController::class);
     Route::resource('merk', MerkController::class);
+
+    Route::get('peminjaman', [AdminPeminjamanController::class, 'index'])->name('peminjaman.index');
+    Route::post('peminjaman/{id}/setujui', [AdminPeminjamanController::class, 'setujui'])->name('peminjaman.setujui');
+    Route::post('peminjaman/{id}/tolak', [AdminPeminjamanController::class, 'tolak'])->name('peminjaman.tolak');
+    Route::get('peminjaman/{id}/bukti', [AdminPeminjamanController::class, 'lihatBukti'])->name('peminjaman.bukti');
+
 });
 
+// karyawan
+Route::middleware(['auth', 'peran:admin|karyawan'])->prefix('karyawan')->name('karyawan.')->group(function () {
+    Route::get('dashboard', function () {
+        return view('karyawan.dashboard');
+    })->name('dashboard');
+
+    Route::resource('peminjaman', PeminjamanController::class)->except(['edit', 'update', 'destroy']);
+    Route::get('peminjaman/{id}/pengembalian', [PeminjamanController::class, 'pengembalianForm'])->name('peminjaman.pengembalian.form');
+    Route::post('peminjaman/{id}/pengembalian', [PeminjamanController::class, 'pengembalianStore'])->name('peminjaman.pengembalian.store');
+
+    // Route::resource('peminjaman/riwayat', PeminjamanController::class)->only(['index','destroy']);
+
+});
 
 // belum diulah
 // Dashboard untuk admin
-Route::get('/admin/dashboard', function () {
-    return view('admin.dashboard');
-})->middleware(['auth', 'peran:admin'])->name('admin.dashboard');
 
 // Dashboard untuk karyawan
-Route::get('/karyawan/dashboard', function () {
-    return view('karyawan.dashboard');
-})->middleware(['auth', 'peran:admin|karyawan'])->name('karyawan.dashboard');
-
