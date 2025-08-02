@@ -1,71 +1,131 @@
 @extends('components.app')
 
 @section('content')
-    <div class="container">
-        <h1>Edit Booking</h1>
-        <form action="{{ route('admin.bookings.update', $booking->id) }}" method="POST">
-            @csrf
-            @method('PUT')
+<div class="container">
+    <h2 class="mb-4">Edit Booking</h2>
 
-            <div class="form-group">
-                <label>Pengguna</label>
-                <select name="user_id" class="form-control">
-                    @foreach ($users as $user)
-                        <option value="{{ $user->id }}" {{ $booking->user_id == $user->id ? 'selected' : '' }}>
-                            {{ $user->name }}
-                        </option>
-                    @endforeach
-                </select>
-            </div>
+    @if ($errors->any())
+        <div class="alert alert-danger">
+            <ul>
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
 
-            <div class="form-group">
-                <label>Ruangan</label>
-                <select name="room_id" class="form-control">
-                    @foreach ($rooms as $room)
-                        <option value="{{ $room->id }}" {{ $booking->room_id == $room->id ? 'selected' : '' }}>
-                            {{ $room->name }}
-                        </option>
-                    @endforeach
-                </select>
-            </div>
+    <form action="{{ route('admin.bookings.update', $booking->id) }}" method="POST">
+        @csrf
+        @method('PUT')
 
-            <div class="form-group">
-                <label>Check-in</label>
-                <input type="datetime-local" name="checkin_date" class="form-control"
-                    value="{{ date('Y-m-d\TH:i', strtotime($booking->checkin_date)) }}">
-            </div>
+        {{-- Form yang sama seperti create --}}
+        <div class="form-group">
+            <label for="user_id">Pengguna</label>
+            <select name="user_id" id="user_id" class="form-control" required>
+                @foreach($users as $user)
+                    <option value="{{ $user->id }}" {{ old('user_id', $booking->user_id) == $user->id ? 'selected' : '' }}>
+                        {{ $user->name }} ({{ $user->email }})
+                    </option>
+                @endforeach
+            </select>
+        </div>
 
-            <div class="form-group">
-                <label>Check-out</label>
-                <input type="datetime-local" name="checkout_date" class="form-control"
-                    value="{{ date('Y-m-d\TH:i', strtotime($booking->checkout_date)) }}">
-            </div>
+        <div class="form-group">
+            <label for="room_id">Ruangan</label>
+            <select name="room_id" id="room_id" class="form-control" required>
+                @foreach($rooms as $room)
+                    <option value="{{ $room->id }}" {{ old('room_id', $booking->room_id) == $room->id ? 'selected' : '' }}>
+                        {{ $room->name }}
+                    </option>
+                @endforeach
+            </select>
+        </div>
 
-            <div class="form-group">
-                <label>Jumlah Orang</label>
-                <input type="number" name="person_number" class="form-control" value="{{ $booking->person_number }}">
-            </div>
+        <div class="form-group">
+            <label for="checkin_date">Tanggal Mulai</label>
+            <input type="datetime-local" name="checkin_date" id="checkin_date" class="form-control"
+                   value="{{ old('checkin_date', \Carbon\Carbon::parse($booking->checkin_date)->format('Y-m-d\TH:i')) }}" required>
+        </div>
 
-            <div class="form-group">
-                <label>Judul</label>
-                <input type="text" name="title" class="form-control" value="{{ $booking->title }}">
-            </div>
+        <div class="form-group">
+            <label for="checkout_date">Tanggal Selesai</label>
+            <input type="datetime-local" name="checkout_date" id="checkout_date" class="form-control"
+                   value="{{ old('checkout_date', \Carbon\Carbon::parse($booking->checkout_date)->format('Y-m-d\TH:i')) }}" required>
+        </div>
 
-            <div class="form-group">
-                <label>Deskripsi</label>
-                <textarea name="description" class="form-control">{{ $booking->description }}</textarea>
-            </div>
+        <div class="form-group">
+            <label for="person_number">Jumlah Orang</label>
+            <input type="number" name="person_number" id="person_number" class="form-control"
+                   value="{{ old('person_number', $booking->person_number) }}" required min="1">
+        </div>
 
-            <div class="form-group">
-                <label>Tipe</label>
-                <select name="type" class="form-control">
-                    <option value="internal" {{ $booking->type == 'internal' ? 'selected' : '' }}>Internal</option>
-                    <option value="eksternal" {{ $booking->type == 'eksternal' ? 'selected' : '' }}>Eksternal</option>
-                </select>
-            </div>
+        <div class="form-group">
+            <label for="title">Judul</label>
+            <input type="text" name="title" id="title" class="form-control"
+                   value="{{ old('title', $booking->title) }}" required>
+        </div>
 
-            <button type="submit" class="btn btn-primary">Update</button>
-            <a href="{{ route('admin.bookings.index') }}" class="btn btn-secondary">Batal</a>
-        </form>
-    </div>
+        <div class="form-group">
+            <label for="description">Deskripsi</label>
+            <textarea name="description" id="description" class="form-control" rows="3" required>{{ old('description', $booking->description) }}</textarea>
+        </div>
+
+        <div class="form-group">
+            <label for="type">Jenis</label>
+            <select name="type" id="type" class="form-control" required>
+                <option value="internal" {{ old('type', $booking->type) == 'internal' ? 'selected' : '' }}>Internal</option>
+                <option value="eksternal" {{ old('type', $booking->type) == 'eksternal' ? 'selected' : '' }}>Eksternal</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="repeat_schedule">Jadwal Pengulangan</label>
+            <select name="repeat_schedule" id="repeat_schedule" class="form-control">
+                <option value="none" {{ old('repeat_schedule', $booking->repeat_schedule) == 'none' ? 'selected' : '' }}>Tidak Ada</option>
+                <option value="daily" {{ old('repeat_schedule', $booking->repeat_schedule) == 'daily' ? 'selected' : '' }}>Harian</option>
+                <option value="weekly" {{ old('repeat_schedule', $booking->repeat_schedule) == 'weekly' ? 'selected' : '' }}>Mingguan</option>
+                <option value="monthly" {{ old('repeat_schedule', $booking->repeat_schedule) == 'monthly' ? 'selected' : '' }}>Bulanan</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="repeat_weekly">Ulang Mingguan</label>
+            <input type="text" name="repeat_weekly" id="repeat_weekly" class="form-control"
+                   value="{{ old('repeat_weekly', $booking->repeat_weekly) }}">
+        </div>
+
+        <div class="form-group">
+            <label for="repeat_monthly">Ulang Bulanan</label>
+            <input type="text" name="repeat_monthly" id="repeat_monthly" class="form-control"
+                   value="{{ old('repeat_monthly', $booking->repeat_monthly) }}">
+        </div>
+
+        <div class="form-check">
+            <input type="checkbox" name="fullday" id="fullday" value="{{ $booking->fullday }}" class="form-check-input"
+                   {{ old('fullday', $booking->fullday) ? 'checked' : '' }}>
+            <label for="fullday" class="form-check-label">Sehari Penuh</label>
+        </div>
+
+        <div class="form-group mt-3">
+            <label for="confirmation_status">Status Konfirmasi</label>
+            <select name="confirmation_status" id="confirmation_status" class="form-control" required>
+                <option value="tentative" {{ old('confirmation_status', $booking->confirmation_status) == 'tentative' ? 'selected' : '' }}>Tentatif</option>
+                <option value="confirmed" {{ old('confirmation_status', $booking->confirmation_status) == 'confirmed' ? 'selected' : '' }}>Terkonfirmasi</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="status">Status Booking</label>
+            <select name="status" id="status" class="form-control" required>
+                <option value="pending" {{ old('status', $booking->status) == 'pending' ? 'selected' : '' }}>Menunggu</option>
+                <option value="used" {{ old('status', $booking->status) == 'used' ? 'selected' : '' }}>Digunakan</option>
+                <option value="done" {{ old('status', $booking->status) == 'done' ? 'selected' : '' }}>Selesai</option>
+                <option value="canceled" {{ old('status', $booking->status) == 'canceled' ? 'selected' : '' }}>Dibatalkan</option>
+            </select>
+        </div>
+
+        <button type="submit" class="btn btn-success">Update</button>
+        <a href="{{ route('admin.bookings.index') }}" class="btn btn-secondary">Batal</a>
+    </form>
+</div>
 @endsection

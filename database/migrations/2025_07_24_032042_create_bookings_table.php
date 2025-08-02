@@ -21,7 +21,6 @@ return new class extends Migration
 
             // Foreign key ke tabel rooms
             $table->foreignId('room_id')->constrained('rooms')->onDelete('cascade');
-
             $table->dateTime('checkin_date');
             $table->dateTime('checkout_date');
             $table->integer('person_number');

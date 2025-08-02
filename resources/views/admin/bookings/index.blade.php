@@ -1,339 +1,246 @@
 @extends('components.app')
 
-@section('title', 'Manajemen Booking')
+@push('css')
+    <!-- DataTables CSS -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap4.min.css">
+@endpush
+
 
 @section('content')
-<div class="container-fluid">
-    <div class="row">
-        <div class="col-12">
-            <!-- Header -->
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <h1 class="h3 mb-0 text-gray-800">Manajemen Booking</h1>
-                <a href="{{ route('admin.bookings.create') }}" class="btn btn-primary">
-                    <i class="fas fa-plus"></i> Tambah Booking
-                </a>
-            </div>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h4 class="card-title mb-0">Booking Management</h4>
+                        <a href="{{ route('admin.bookings.create') }}" class="btn btn-primary">
+                            <i class="fas fa-plus"></i> Add New Booking
+                        </a>
+                    </div>
 
-            <!-- Alert Messages -->
-            @if(session('success'))
-                <div class="alert alert-success alert-dismissible fade show" role="alert">
-                    {{ session('success') }}
-                    <button type="button" class="close" data-dismiss="alert">
-                        <span>&times;</span>
-                    </button>
-                </div>
-            @endif
-
-            @if($errors->any())
-                <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                    @foreach($errors->all() as $error)
-                        <div>{{ $error }}</div>
-                    @endforeach
-                    <button type="button" class="close" data-dismiss="alert">
-                        <span>&times;</span>
-                    </button>
-                </div>
-            @endif
-
-            <!-- Filter Card -->
-            <div class="card shadow mb-4">
-                <div class="card-header py-3">
-                    <h6 class="m-0 font-weight-bold text-primary">Filter & Pencarian</h6>
-                </div>
-                <div class="card-body">
-                    <form method="GET" action="{{ route('admin.bookings.index') }}">
-                        <div class="row">
-                            <div class="col-md-3">
-                                <div class="form-group">
-                                    <label>Status</label>
-                                    <select name="status" class="form-control">
-                                        <option value="">Semua Status</option>
-                                        <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>Pending</option>
-                                       
-                                        <option value="used" {{ request('status') == 'used' ? 'selected' : '' }}>Used</option>
-                                        <option value="done" {{ request('status') == 'done' ? 'selected' : '' }}>Done</option>
-                                        <option value="canceled" {{ request('status') == 'canceled' ? 'selected' : '' }}>Canceled</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <div class="form-group">
-                                    <label>Status Konfirmasi</label>
-                                    <select name="confirmation_status" class="form-control">
-                                        <option value="">Semua Status</option>
-                                        <option value="tentative" {{ request('confirmation_status') == 'tentative' ? 'selected' : '' }}>Tentative</option>
-                                        <option value="confirmed" {{ request('confirmation_status') == 'confirmed' ? 'selected' : '' }}>Confirmed</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="col-md-2">
-                                <div class="form-group">
-                                    <label>Dari Tanggal</label>
-                                    <input type="date" name="date_from" class="form-control" value="{{ request('date_from') }}">
-                                </div>
-                            </div>
-                            <div class="col-md-2">
-                                <div class="form-group">
-                                    <label>Sampai Tanggal</label>
-                                    <input type="date" name="date_to" class="form-control" value="{{ request('date_to') }}">
-                                </div>
-                            </div>
-                            <div class="col-md-2">
-                                <div class="form-group">
-                                    <label>Pencarian</label>
-                                    <input type="text" name="search" class="form-control" placeholder="Cari title/user..." value="{{ request('search') }}">
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-12">
-                                <button type="submit" class="btn btn-primary">
-                                    <i class="fas fa-search"></i> Filter
-                                </button>
-                                <a href="{{ route('admin.bookings.index') }}" class="btn btn-secondary">
-                                    <i class="fas fa-undo"></i> Reset
-                                </a>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-            </div>
-
-            <!-- Data Table -->
-            <div class="card shadow mb-4">
-                <div class="card-header py-3">
-                    <h6 class="m-0 font-weight-bold text-primary">Data Booking</h6>
-                </div>
-                <div class="card-body">
-                    <div class="table-responsive">
-                        <table class="table table-bordered" width="100%" cellspacing="0">
-                            <thead>
-                                <tr>
-                                    <th>ID</th>
-                                    <th>Title</th>
-                                    <th>User</th>
-                                    <th>Ruangan</th>
-                                    <th>Check-in</th>
-                                    <th>Check-out</th>
-                                    <th>Jumlah Orang</th>
-                                    <th>Status</th>
-                                    <th>Konfirmasi</th>
-                                    <th>Type</th>
-                                    <th>Aksi</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @forelse($bookings as $booking)
-                                <tr>
-                                    <td>{{ $booking->id }}</td>
-                                    <td>
-                                        <strong>{{ $booking->title }}</strong>
-                                        @if($booking->fullday)
-                                            <span class="badge badge-info">Full Day</span>
-                                        @endif
-                                    </td>
-                                    <td>{{ $booking->user->name }}</td>
-                                    <td>{{ $booking->room->name }}</td>
-                                    <td>{{ \Carbon\Carbon::parse($booking->checkin_date)->format('d/m/Y H:i') }}</td>
-                                    <td>{{ \Carbon\Carbon::parse($booking->checkout_date)->format('d/m/Y H:i') }}</td>
-                                    <td>{{ $booking->person_number }} orang</td>
-                                    <td>
-                                        @if($booking->status == 'pending')
-                                            <div class="btn-group" role="group">
-                                                <button class="btn btn-sm btn-success approve-btn" data-id="{{ $booking->id }}" title="Approve">
-                                                    <i class="fas fa-check"></i> Approve
-                                                </button>
-                                                <button class="btn btn-sm btn-danger reject-btn" data-id="{{ $booking->id }}" title="Reject">
-                                                    <i class="fas fa-times"></i> Reject
-                                                </button>
-                                            </div>
-                                        @else
-                                            <select class="form-control form-control-sm status-select" data-id="{{ $booking->id }}"
-                                                    {{ in_array($booking->status, ['rejected', 'canceled']) ? 'disabled' : '' }}>
-                                                <option value="pending" {{ $booking->status == 'pending' ? 'selected' : '' }}>Pending</option>
-                                                <option value="approved" {{ $booking->status == 'approved' ? 'selected' : '' }}>Approved</option>
-                                                <option value="rejected" {{ $booking->status == 'rejected' ? 'selected' : '' }}>Rejected</option>
-                                                <option value="used" {{ $booking->status == 'used' ? 'selected' : '' }}>Used</option>
-                                                <option value="done" {{ $booking->status == 'done' ? 'selected' : '' }}>Done</option>
-                                                <option value="canceled" {{ $booking->status == 'canceled' ? 'selected' : '' }}>Canceled</option>
-                                            </select>
-                                        @endif
-                                    </td>
-                                    <td>
-                                        <select class="form-control form-control-sm confirmation-select" data-id="{{ $booking->id }}">
-                                            <option value="tentative" {{ $booking->confirmation_status == 'tentative' ? 'selected' : '' }}>Tentative</option>
-                                            <option value="confirmed" {{ $booking->confirmation_status == 'confirmed' ? 'selected' : '' }}>Confirmed</option>
+                    <div class="card-body">
+                        <!-- Filter Form -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <form method="GET" action="{{ route('admin.bookings.index') }}" class="row g-3">
+                                    <div class="col-md-3">
+                                        <label class="form-label">Search</label>
+                                        <input type="text" name="search" class="form-control"
+                                            placeholder="Title, User, Room..." value="{{ request('search') }}">
+                                    </div>
+                                    <div class="col-md-2">
+                                        <label class="form-label">Status</label>
+                                        <select name="status" class="form-select">
+                                            <option value="">All Status</option>
+                                            <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>
+                                                Pending</option>
+                                            <option value="used" {{ request('status') == 'used' ? 'selected' : '' }}>Used
+                                            </option>
+                                            <option value="done" {{ request('status') == 'done' ? 'selected' : '' }}>Done
+                                            </option>
+                                            <option value="canceled"
+                                                {{ request('status') == 'canceled' ? 'selected' : '' }}>Canceled</option>
                                         </select>
-                                    </td>
-                                    <td>
-                                        <span class="badge badge-{{ $booking->type == 'internal' ? 'success' : 'warning' }}">
-                                            {{ ucfirst($booking->type) }}
-                                        </span>
-                                    </td>
-                                    <td>
-                                        <div class="btn-group" role="group">
-                                            <a href="{{ route('admin.bookings.show', $booking) }}" class="btn btn-sm btn-info" title="Detail">
-                                                <i class="fas fa-eye"></i>
-                                            </a>
-                                            <a href="{{ route('admin.bookings.edit', $booking) }}" class="btn btn-sm btn-warning" title="Edit">
-                                                <i class="fas fa-edit"></i>
-                                            </a>
-                                            <button type="button" class="btn btn-sm btn-danger delete-btn"
-                                                    data-id="{{ $booking->id }}"
-                                                    data-title="{{ $booking->title }}"
-                                                    title="Hapus">
-                                                <i class="fas fa-trash"></i>
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
-                                @empty
-                                <tr>
-                                    <td colspan="11" class="text-center">Tidak ada data booking</td>
-                                </tr>
-                                @endforelse
-                            </tbody>
-                        </table>
-                    </div>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <label class="form-label">Confirmation</label>
+                                        <select name="confirmation_status" class="form-select">
+                                            <option value="">All Confirmation</option>
+                                            <option value="tentative"
+                                                {{ request('confirmation_status') == 'tentative' ? 'selected' : '' }}>
+                                                Tentative</option>
+                                            <option value="confirmed"
+                                                {{ request('confirmation_status') == 'confirmed' ? 'selected' : '' }}>
+                                                Confirmed</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <label class="form-label">Date From</label>
+                                        <input type="date" name="date_from" class="form-control"
+                                            value="{{ request('date_from') }}">
+                                    </div>
+                                    <div class="col-md-2">
+                                        <label class="form-label">Date To</label>
+                                        <input type="date" name="date_to" class="form-control"
+                                            value="{{ request('date_to') }}">
+                                    </div>
+                                    <div class="col-md-1 d-flex align-items-end">
+                                        <button type="submit" class="btn btn-outline-primary me-2">
+                                            <i class="fas fa-search"></i>
+                                        </button>
+                                        <a href="{{ route('admin.bookings.index') }}" class="btn btn-outline-secondary">
+                                            <i class="fas fa-times"></i>
+                                        </a>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
 
-                    <!-- Pagination -->
-                    <div class="d-flex justify-content-center">
-                        {{ $bookings->appends(request()->query())->links() }}
+                        <!-- Results Info -->
+                        <div class="row mb-3">
+                            <div class="col-12">
+                                <p class="text-muted mb-0">
+                                    Showing {{ $bookings->firstItem() ?? 0 }} to {{ $bookings->lastItem() ?? 0 }}
+                                    of {{ $bookings->total() }} results
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Bookings Table -->
+                        <div class="table-responsive">
+                            <table class="table table-hover" id="bookingTable">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Title</th>
+                                        <th>User</th>
+                                        <th>Room</th>
+                                        <th>Check-in</th>
+                                        <th>Check-out</th>
+                                        <th>Person</th>
+                                        <th>Type</th>
+                                        <th>Status</th>
+                                        <th>Confirmation</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @forelse($bookings as $booking)
+                                        <tr>
+                                            <td>{{ $booking->id }}</td>
+                                            <td>
+                                                <strong>{{ $booking->title }}</strong>
+                                                @if ($booking->fullday)
+                                                    <span class="badge bg-info ms-1">Full Day</span>
+                                                @endif
+                                            </td>
+                                            <td>
+                                                <div>{{ $booking->user->name }}</div>
+                                                <small class="text-muted">{{ $booking->user->email }}</small>
+                                            </td>
+                                            <td>{{ $booking->room->name }}</td>
+                                            <td>{{ $booking->checkin_date->format('d/m/Y H:i') }}</td>
+                                            <td>{{ $booking->checkout_date->format('d/m/Y H:i') }}</td>
+                                            <td>{{ $booking->person_number }}</td>
+                                            <td>
+                                                <span
+                                                    class="badge bg-{{ $booking->type == 'internal' ? 'primary' : 'warning' }}">
+                                                    {{ ucfirst($booking->type) }}
+                                                </span>
+                                            </td>
+                                            <td>
+                                                @php
+                                                    $statusColors = [
+                                                        'pending' => 'warning',
+                                                        'used' => 'success',
+                                                        'done' => 'info',
+                                                        'canceled' => 'danger',
+                                                    ];
+                                                @endphp
+                                                <span
+                                                    class="badge bg-{{ $statusColors[$booking->status] ?? 'secondary' }}">
+                                                    {{ ucfirst($booking->status) }}
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <span
+                                                    class="badge bg-{{ $booking->confirmation_status == 'confirmed' ? 'success' : 'secondary' }}">
+                                                    {{ ucfirst($booking->confirmation_status) }}
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <div class="btn-group" role="group">
+                                                    <a href="{{ route('admin.bookings.show', $booking) }}"
+                                                        class="btn btn-sm btn-outline-info" title="View">
+                                                        <i class="fas fa-eye"></i>
+                                                    </a>
+                                                    <a href="{{ route('admin.bookings.edit', $booking) }}"
+                                                        class="btn btn-sm btn-outline-primary" title="Edit">
+                                                        <i class="fas fa-edit"></i>
+                                                    </a>
+
+                                                    @if ($booking->status == 'pending')
+                                                        <form action="{{ route('admin.bookings.approve', $booking) }}"
+                                                            method="POST" style="display: inline;">
+                                                            @csrf
+                                                            @method('PATCH')
+                                                            <button type="submit" class="btn btn-sm btn-outline-success"
+                                                                title="Approve" onclick="return confirm('Are you sure?')">
+                                                                <i class="fas fa-check"></i>
+                                                            </button>
+                                                        </form>
+                                                        <form action="{{ route('admin.bookings.reject', $booking) }}"
+                                                            method="POST" style="display: inline;">
+                                                            @csrf
+                                                            @method('PATCH')
+                                                            <button type="submit" class="btn btn-sm btn-outline-danger"
+                                                                title="Reject" onclick="return confirm('Are you sure?')">
+                                                                <i class="fas fa-times"></i>
+                                                            </button>
+                                                        </form>
+                                                    @endif
+
+                                                    <form action="{{ route('admin.bookings.destroy', $booking) }}"
+                                                        method="POST" style="display: inline;">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                        <button type="submit" class="btn btn-sm btn-outline-danger"
+                                                            title="Delete"
+                                                            onclick="return confirm('Are you sure you want to delete this booking?')">
+                                                            <i class="fas fa-trash"></i>
+                                                        </button>
+                                                    </form>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    @empty
+                                        <tr>
+                                            <td colspan="11" class="text-center py-4">
+                                                <div class="text-muted">
+                                                    <i class="fas fa-calendar-times fa-3x mb-3"></i>
+                                                    <p>No bookings found</p>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    @endforelse
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="d-flex justify-content-end">
+                            <!-- Pagination -->
+                            @if ($bookings->hasPages())
+                                <div class="d-flex justify-content-center">
+                                    {{ $bookings->appends(request()->query())->links() }}
+                                </div>
+                            @endif
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
-
-<!-- Delete Modal -->
-<div class="modal fade" id="deleteModal" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Konfirmasi Hapus</h5>
-                <button type="button" class="close" data-dismiss="modal">
-                    <span>&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <p>Apakah Anda yakin ingin menghapus booking "<span id="delete-title"></span>"?</p>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
-                <form id="delete-form" method="POST" style="display: inline;">
-                    @csrf
-                    @method('DELETE')
-                    <button type="submit" class="btn btn-danger">Hapus</button>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
 @endsection
 
+
 @push('scripts')
-<script>
-$(document).ready(function() {
-    // Delete confirmation
-    $('.delete-btn').click(function() {
-        const id = $(this).data('id');
-        const title = $(this).data('title');
+    <!-- jQuery (wajib untuk DataTables) -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
-        $('#delete-title').text(title);
-        $('#delete-form').attr('action', `/admin/bookings/${id}`);
-        $('#deleteModal').modal('show');
-    });
+    <!-- DataTables JS -->
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap4.min.js"></script>
 
-    // Approve booking
-    $('.approve-btn').click(function() {
-        const id = $(this).data('id');
-
-        if (confirm('Apakah Anda yakin ingin menyetujui booking ini?')) {
-            $.ajax({
-                url: `/admin/bookings/${id}/approve`,
-                method: 'PATCH',
-                data: {
-                    _token: '{{ csrf_token() }}'
-                },
-                success: function(response) {
-                    location.reload();
-                },
-                error: function() {
-                    alert('Terjadi kesalahan');
-                }
+    <script>
+        $(document).ready(function() {
+            $('#bookingTable').DataTable({
+                "order": [
+                    [0, "desc"]
+                ], // Default sort: ID descending
+                "paging": false, // Matikan pagination bawaan DataTables (karena Laravel sudah handle)
+                "info": false,
+                "searching": false // Disable search (karena filter pakai Laravel)
             });
-        }
-    });
-
-    // Reject booking
-    $('.reject-btn').click(function() {
-        const id = $(this).data('id');
-
-        if (confirm('Apakah Anda yakin ingin menolak booking ini?')) {
-            $.ajax({
-                url: `/admin/bookings/${id}/reject`,
-                method: 'PATCH',
-                data: {
-                    _token: '{{ csrf_token() }}'
-                },
-                success: function(response) {
-                    location.reload();
-                },
-                error: function() {
-                    alert('Terjadi kesalahan');
-                }
-            });
-        }
-    });
-    $('.status-select').change(function() {
-        const id = $(this).data('id');
-        const status = $(this).val();
-
-        $.ajax({
-            url: `/admin/bookings/${id}/status`,
-            method: 'PATCH',
-            data: {
-                _token: '{{ csrf_token() }}',
-                status: status
-            },
-            success: function(response) {
-                if (response.success) {
-                    toastr.success(response.message);
-                } else {
-                    toastr.error(response.message);
-                }
-            },
-            error: function() {
-                toastr.error('Terjadi kesalahan');
-            }
         });
-    });
-
-    // Update confirmation status via AJAX
-    $('.confirmation-select').change(function() {
-        const id = $(this).data('id');
-        const confirmationStatus = $(this).val();
-
-        $.ajax({
-            url: `/admin/bookings/${id}/confirmation`,
-            method: 'PATCH',
-            data: {
-                _token: '{{ csrf_token() }}',
-                confirmation_status: confirmationStatus
-            },
-            success: function(response) {
-                if (response.success) {
-                    toastr.success(response.message);
-                } else {
-                    toastr.error(response.message);
-                }
-            },
-            error: function() {
-                toastr.error('Terjadi kesalahan');
-            }
-        });
-    });
-});
-</script>
+    </script>
 @endpush

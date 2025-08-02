@@ -1,4 +1,26 @@
-   Schema::create('bookings', function (Blueprint $table) {
+Schema::create('users', function (Blueprint $table) {
+            $table->id();
+            $table->string('name');
+            $table->string('email')->unique();
+            $table->timestamp('email_verified_at')->nullable();
+            $table->string('password');
+            $table->enum('role', ['admin', 'super_admin', 'user'])->default('user'); // Enum role
+            $table->rememberToken();
+            $table->timestamps();
+        });
+
+         Schema::create('rooms', function (Blueprint $table) {
+            $table->id();
+            $table->string('name');
+            $table->text('description');
+            $table->integer('capacity');
+            $table->text('facilities');
+            $table->string('photo');
+            $table->boolean('is_active')->default(true); // tinyint(1) sering digunakan sebagai boolean
+            $table->timestamps();
+        });
+
+        Schema::create('bookings', function (Blueprint $table) {
             $table->id();
 
             // Foreign key ke tabel users
@@ -6,7 +28,6 @@
 
             // Foreign key ke tabel rooms
             $table->foreignId('room_id')->constrained('rooms')->onDelete('cascade');
-
             $table->dateTime('checkin_date');
             $table->dateTime('checkout_date');
             $table->integer('person_number');
@@ -19,28 +40,5 @@
             $table->enum('type', ['internal', 'eksternal']);
             $table->boolean('fullday')->default(false); // tinyint(1)
             $table->enum('confirmation_status', ['tentative', 'confirmed'])->default('tentative');
-            $table->timestamps();
-        });
-
- Schema::create('rooms', function (Blueprint $table) {
-            $table->id();
-            $table->string('name');
-            $table->text('description');
-            $table->integer('capacity');
-            $table->text('facilities');
-            $table->string('photo');
-            $table->boolean('is_active')->default(true); // tinyint(1) sering digunakan sebagai boolean
-            $table->timestamps();
-        });
-
-
- Schema::create('users', function (Blueprint $table) {
-            $table->id();
-            $table->string('name');
-            $table->string('email')->unique();
-            $table->timestamp('email_verified_at')->nullable();
-            $table->string('password');
-            $table->enum('role', ['admin', 'super admin', 'user'])->default('user'); // Enum role
-            $table->rememberToken();
             $table->timestamps();
         });

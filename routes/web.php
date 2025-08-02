@@ -18,10 +18,10 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 // Dashboard untuk superadmin
 Route::get('/superadmin/dashboard', function () {
     return view('admin.dashboard');
-})->middleware(['auth', 'role:superadmin'])->name('superadmin.dashboard');
+})->middleware(['auth', 'role:super_admin'])->name('superadmin.dashboard');
 
-// admin
-Route::prefix('admin')->middleware(['auth', 'role:admin|superadmin'])->name('admin.')->group(function () {
+// super admin / admin routes
+Route::prefix('admin')->middleware(['auth', 'role:admin|super_admin'])->name('admin.')->group(function () {
 
     // Dashboard admin - langsung return view
     Route::get('/dashboard', function () {
@@ -32,15 +32,13 @@ Route::prefix('admin')->middleware(['auth', 'role:admin|superadmin'])->name('adm
     Route::resource('/rooms', RoomController::class);
 
     // Manajemen Booking
-    // Manajemen Booking
     Route::resource('/bookings', BookingController::class);
-    Route::patch('/bookings/{booking}/approve', [BookingController::class, 'approve'])->name('bookings.approve');
-    Route::patch('/bookings/{booking}/reject', [BookingController::class, 'reject'])->name('bookings.reject');
-    Route::patch('/bookings/{booking}/status', [BookingController::class, 'updateStatus'])->name('bookings.updateStatus');
 
 });
 
+
+// all role routes
 // Dashboard untuk user
 // Route::get('/user/dashboard', function () {
 //     return view('user.dashboard');
-// })->middleware(['auth', 'role:superadmin|admin|user'])->name('user.dashboard');
+// })->middleware(['auth', 'role:super_admin|admin|user'])->name('user.dashboard');

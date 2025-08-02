@@ -1,5 +1,11 @@
 @extends('components.app')
 
+@push('css')
+    <!-- DataTables CSS -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap4.min.css">
+@endpush
+
+
 @section('content')
     <div class="card">
         <div class="card-body">
@@ -13,7 +19,7 @@
                     <div class="alert alert-success">{{ session('success') }}</div>
                 @endif
 
-                <table class="table table-bordered">
+                <table class="table table-bordered" id="roomTable">
                     <thead>
                         <tr>
                             <th>Nama</th>
@@ -30,7 +36,8 @@
                                 <td>{{ $room->capacity }}</td>
                                 <td>
                                     @if ($room->photo)
-                                        <img src="{{ asset('storage/' . $room->photo) }}" class="img-fluid" style="max-height: 200px;">
+                                        <img src="{{ asset('storage/' . $room->photo) }}" class="img-fluid"
+                                            style="max-height: 200px;">
                                     @endif
                                 </td>
                                 <td>{{ $room->is_active ? 'Aktif' : 'Nonaktif' }}</td>
@@ -51,3 +58,27 @@
         </div>
     </div>
 @endsection
+
+
+@push('scripts')
+    <!-- jQuery (wajib untuk DataTables) -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <!-- DataTables JS -->
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap4.min.js"></script>
+
+    <script>
+        $(document).ready(function() {
+            $('#roomTable').DataTable({
+                "order": [
+                    [0, "desc"]
+                ],
+                "columnDefs": [{
+                    "targets": [2,3,4], // kolom ke-4 (indeks mulai dari 0)
+                    "orderable": false // kolom tidak bisa diurutkan
+                }]
+            });
+        });
+    </script>
+@endpush
