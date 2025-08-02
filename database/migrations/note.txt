@@ -13,7 +13,7 @@ Schema::create('users', function (Blueprint $table) {
             $table->id();
             $table->string('name');
             $table->text('description');
-            $table->integer('capacity');
+            $table->integer('capacity'); // kapasitas ruangan, tidak bisa booking saat booking mengisi lebih dari kapasitas ruangan
             $table->text('facilities');
             $table->string('photo');
             $table->boolean('is_active')->default(true); // tinyint(1) sering digunakan sebagai boolean
@@ -38,7 +38,7 @@ Schema::create('users', function (Blueprint $table) {
             $table->string('title', 100);
             $table->text('description');
             $table->enum('type', ['internal', 'eksternal']);
-            $table->boolean('fullday')->default(false); // tinyint(1)
-            $table->enum('confirmation_status', ['tentative', 'confirmed'])->default('tentative');
+            $table->boolean('fullday')->default(0); // 0 artinya tidak fullday dan 1 fullday
+            $table->enum('confirmation_status', ['tentative', 'confirmed'])->default('tentative'); // tentative artinya belum di konfirmasi oleh admin setelah konfirmasi masuk ke status yaitu ada konfirmasi ya yaitu used dan konfirmasi tidak yaitu cancel, saat tentative status adalah pending lalu ada juga aksi untuk menyelesaikan atau selesai bookingan yaitu done
             $table->timestamps();
         });

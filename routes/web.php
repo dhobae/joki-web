@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\BookingController;
 use App\Http\Controllers\Admin\RoomController;
+use App\Http\Controllers\UserBookingController;
 use App\Http\Controllers\AuthController;
 use Illuminate\Support\Facades\Route;
 
@@ -33,12 +34,23 @@ Route::prefix('admin')->middleware(['auth', 'role:admin|super_admin'])->name('ad
 
     // Manajemen Booking
     Route::resource('/bookings', BookingController::class);
+    // lengkapi route yang diperlukan apa lagi
+    Route::patch('/bookings/{booking}/confirm', [BookingController::class, 'confirm'])->name('bookings.confirm');
+    Route::patch('/bookings/{booking}/cancel', [BookingController::class, 'cancel'])->name('bookings.cancel');
+    Route::patch('/bookings/{booking}/done', [BookingController::class, 'done'])->name('bookings.done');
 
 });
 
-
 // all role routes
-// Dashboard untuk user
-// Route::get('/user/dashboard', function () {
-//     return view('user.dashboard');
-// })->middleware(['auth', 'role:super_admin|admin|user'])->name('user.dashboard');
+Route::prefix('user')->middleware(['auth', 'role:user'])->name('user.')->group(function () {
+    Route::get('dashboard', function () {
+        return view('user.dashboard');
+    })->name('dashboard');
+
+    // Booking routes user
+    Route::get('bookings', [UserBookingController::class, 'index'])->name('bookings.index');
+    Route::get('bookings/create', [UserBookingController::class, 'create'])->name('bookings.create');
+    Route::post('bookings', [UserBookingController::class, 'store'])->name('bookings.store');
+    Route::get('bookings/{booking}', [UserBookingController::class, 'show'])->name('bookings.show');
+
+});

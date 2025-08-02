@@ -2,18 +2,26 @@
       <div class="sb-sidenav-menu">
           <div class="nav">
               <div class="sb-sidenav-menu-heading">Main</div>
+              @if (Auth::user()->role === 'admin')
+                  <a class="nav-link {{ Request::is('admin/rooms*') ? 'active' : '' }}"
+                      href="{{ route('admin.rooms.index') }}">
+                      <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
+                      Rooms
+                  </a>
 
-              <a class="nav-link {{ Request::is('admin/rooms*') ? 'active' : '' }}"
-                  href="{{ route('admin.rooms.index') }}">
-                  <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
-                  Rooms
-              </a>
-
-              <a class="nav-link {{ Request::is('admin/bookings*') ? 'active' : '' }}"
-                  href="{{ route('admin.bookings.index') }}">
-                  <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
-                  Bookings
-              </a>
+                  <a class="nav-link {{ Request::is('admin/bookings*') ? 'active' : '' }}"
+                      href="{{ route('admin.bookings.index') }}">
+                      <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
+                      Bookings
+                  </a>
+              @endif
+              @if (Auth::user()->role === 'user')
+                  <a class="nav-link {{ Request::is('user/bookings*') ? 'active' : '' }}"
+                      href="{{ route('user.bookings.index') }}">
+                      <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
+                      Bookings
+                  </a>
+              @endif
 
               {{-- @php
                   if (Auth::user()->peran === 'admin') {
