@@ -15,6 +15,7 @@ class PeminjamanController extends Controller
         return view('karyawan.peminjaman.index', compact('peminjamans'));
     }
 
+
     public function create()
     {
         $mobils = Mobil::where('status_mobil', 'Tersedia')->get();
@@ -28,14 +29,19 @@ class PeminjamanController extends Controller
             'tanggal_pinjam' => 'required|date|after_or_equal:today',
         ]);
 
-        Peminjaman::create([
+        // Langsung pinjam tanpa konfirmasi
+        $peminjaman = Peminjaman::create([
             'id_user' => Auth::id(),
             'id_mobil' => $request->id_mobil,
             'tanggal_pinjam' => $request->tanggal_pinjam,
-            'status_peminjaman' => 'diajukan',
+            'status_peminjaman' => 'dipinjam',
         ]);
 
-        return redirect()->route('karyawan.peminjaman.index')->with('success', 'Peminjaman berhasil diajukan.');
+        // Set mobil jadi tidak tersedia langsung
+        $mobil = Mobil::findOrFail($request->id_mobil);
+        $mobil->update(['status_mobil' => 'Tidak Tersedia']);
+
+        return redirect()->route('karyawan.peminjaman.index')->with('success', 'Mobil berhasil dipinjam.');
     }
 
     public function show(Peminjaman $peminjaman)
@@ -52,7 +58,8 @@ class PeminjamanController extends Controller
 
         // Pastikan hanya peminjam yang bisa mengakses
         abort_if($peminjaman->id_user !== Auth::id(), 403);
-        abort_if($peminjaman->status_peminjaman !== 'disetujui' && $peminjaman->status_peminjaman !== 'digunakan', 403);
+        // Hanya bisa mengembalikan jika status dipinjam
+        abort_if($peminjaman->status_peminjaman !== 'dipinjam', 403);
 
         return view('karyawan.peminjaman.pengembalian', compact('peminjaman'));
     }
@@ -79,7 +86,6 @@ class PeminjamanController extends Controller
         // Ubah status mobil menjadi Tersedia kembali
         $peminjaman->mobil->update([
             'status_mobil' => 'Tersedia',
-            // 'foto_mobil' => $path, // ← Sesuai permintaan kamu: update juga kolom `foto_mobil` dengan bukti pengembalian
         ]);
 
         return redirect()->route('karyawan.peminjaman.index')->with('success', 'Mobil berhasil dikembalikan.');

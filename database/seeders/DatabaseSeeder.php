@@ -93,7 +93,7 @@ class DatabaseSeeder extends Seeder
                 'id_mobil' => rand(1, 4),
                 'tanggal_pinjam' => now()->subDays(rand(1, 20)),
                 'tanggal_pengembalian' => rand(0, 1) ? now()->subDays(rand(0, 1)) : null,
-                'status_peminjaman' => collect(['diajukan', 'disetujui', 'digunakan', 'dikembalikan', 'ditolak'])->random(),
+                'status_peminjaman' => collect(['dipinjam', 'dikembalikan'])->random(),
                 'bukti_pengembalian' => null,
                 'created_at' => now(),
                 'updated_at' => now(),

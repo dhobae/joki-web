@@ -3,7 +3,7 @@
 @section('content')
     <div class="container mt-4">
         <h3>Daftar Peminjaman Saya</h3>
-        <a href="{{ route('karyawan.peminjaman.create') }}" class="btn btn-primary my-3">Ajukan Peminjaman</a>
+        <a href="{{ route('karyawan.peminjaman.create') }}" class="btn btn-primary my-3">Pinjam Mobil</a>
 
         @if (session('success'))
             <div class="alert alert-success">{{ session('success') }}</div>
@@ -26,7 +26,7 @@
                         <td>{{ ucfirst($p->status_peminjaman) }}</td>
                         <td>
                             <a href="{{ route('karyawan.peminjaman.show', $p->id) }}" class="btn btn-info btn-sm">Detail</a>
-                            @if ($p->status_peminjaman === 'disetujui' || $p->status_peminjaman === 'digunakan')
+                            @if ($p->status_peminjaman === 'dipinjam')
                                 <a href="{{ route('karyawan.peminjaman.pengembalian.form', $p->id) }}"
                                     class="btn btn-warning btn-sm">Kembalikan</a>
                             @endif

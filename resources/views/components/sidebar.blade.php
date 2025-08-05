@@ -52,13 +52,18 @@
                   <a class="nav-link {{ Request::is('admin/peminjaman*') ? 'active' : '' }}"
                       href="{{ route('admin.peminjaman.index') }}">
                       <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
-                      Pengajuan Peminjaman
-                  </a>
-                  <a class="nav-link {{ Request::is('adawdawdawmin/peminjaman*') ? 'active' : '' }}" href="#">
-                      <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
                       Riwayat Peminjaman
                   </a>
+                  {{-- <a class="nav-link {{ Request::is('adawdawdawmin/peminjaman*') ? 'active' : '' }}" href="#">
+                      <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
+                      Riwayat Peminjaman
+                  </a> --}}
               @else
+                <a class="nav-link {{ Request::is('karyawan/mobil*') ? 'active' : '' }}"
+                      href="{{ route('karyawan.mobil-list') }}">
+                      <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
+                      List Mobil Tersedia
+                  </a>
                   <a class="nav-link {{ Request::is('karyawan/peminjaman*') ? 'active' : '' }}"
                       href="{{ route('karyawan.peminjaman.index') }}">
                       <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>

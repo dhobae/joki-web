@@ -7,7 +7,7 @@ use App\Models\Peminjaman;
 
 class PeminjamanController extends Controller
 {
-    public function index()
+       public function index()
     {
         $peminjamans = Peminjaman::with('user', 'mobil')->latest()->get();
         return view('admin.peminjaman.index', compact('peminjamans'));
@@ -34,6 +34,7 @@ class PeminjamanController extends Controller
         return back()->with('success', 'Peminjaman ditolak.');
     }
 
+  
     public function lihatBukti($id)
     {
         $peminjaman = Peminjaman::with('user', 'mobil')->findOrFail($id);

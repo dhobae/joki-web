@@ -2,7 +2,8 @@
 
 use App\Http\Controllers\Admin\JenisController;
 use App\Http\Controllers\Admin\MerkController;
-use App\Http\Controllers\Admin\MobilController;
+use App\Http\Controllers\MobilController;
+use App\Http\Controllers\Admin\MobilController as AdminMobilController;
 use App\Http\Controllers\Admin\PeminjamanController as AdminPeminjamanController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\PeminjamanController;
@@ -27,13 +28,11 @@ Route::middleware(['auth', 'peran:admin'])->prefix('admin')->name('admin.')->gro
         return view('admin.dashboard');
     })->middleware(['auth', 'peran:admin'])->name('dashboard');
 
-    Route::resource('mobil', MobilController::class);
+    Route::resource('mobil', AdminMobilController::class);
     Route::resource('jenis', JenisController::class);
     Route::resource('merk', MerkController::class);
 
     Route::get('peminjaman', [AdminPeminjamanController::class, 'index'])->name('peminjaman.index');
-    Route::post('peminjaman/{id}/setujui', [AdminPeminjamanController::class, 'setujui'])->name('peminjaman.setujui');
-    Route::post('peminjaman/{id}/tolak', [AdminPeminjamanController::class, 'tolak'])->name('peminjaman.tolak');
     Route::get('peminjaman/{id}/bukti', [AdminPeminjamanController::class, 'lihatBukti'])->name('peminjaman.bukti');
 
 });
@@ -43,6 +42,8 @@ Route::middleware(['auth', 'peran:admin|karyawan'])->prefix('karyawan')->name('k
     Route::get('dashboard', function () {
         return view('karyawan.dashboard');
     })->name('dashboard');
+
+    Route::get('mobil-list', [MobilController::class, 'index'])->name('mobil-list');;
 
     Route::resource('peminjaman', PeminjamanController::class)->except(['edit', 'update', 'destroy']);
     Route::get('peminjaman/{id}/pengembalian', [PeminjamanController::class, 'pengembalianForm'])->name('peminjaman.pengembalian.form');

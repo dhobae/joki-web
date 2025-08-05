@@ -2,7 +2,7 @@
 
 @section('content')
     <div class="container mt-4">
-        <h3>Ajukan Peminjaman Mobil</h3>
+        <h3>Pinjam Mobil</h3>
 
         <form action="{{ route('karyawan.peminjaman.store') }}" method="POST">
             @csrf
