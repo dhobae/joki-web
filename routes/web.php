@@ -1,10 +1,13 @@
 <?php
 
 use App\Http\Controllers\Admin\BookingController;
+use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\RoomController;
 use App\Http\Controllers\UserBookingController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\AuthController;
 use Illuminate\Support\Facades\Route;
+
 
 Route::redirect('/', '/login');
 
@@ -25,9 +28,16 @@ Route::get('/superadmin/dashboard', function () {
 Route::prefix('admin')->middleware(['auth', 'role:admin|super_admin'])->name('admin.')->group(function () {
 
     // Dashboard admin - langsung return view
-    Route::get('/dashboard', function () {
-        return view('admin.dashboard');
-    })->name('dashboard');
+    // Route::get('/dashboard', function () {
+    //     return view('admin.dashboard');
+    // })->name('dashboard');
+
+    // Dashboard admin dengan kalender booking
+    Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
+
+    // API endpoints untuk dashboard
+    Route::get('/booking/{id}/details', [AdminDashboardController::class, 'getBookingDetails'])->name('booking.details');
+    Route::patch('/booking/{id}/confirmation', [AdminDashboardController::class, 'updateConfirmationStatus'])->name('booking.confirmation');
 
     // Manajemen Ruangan
     Route::resource('/rooms', RoomController::class);
@@ -43,14 +53,19 @@ Route::prefix('admin')->middleware(['auth', 'role:admin|super_admin'])->name('ad
 
 // all role routes
 Route::prefix('user')->middleware(['auth', 'role:user'])->name('user.')->group(function () {
-    Route::get('dashboard', function () {
-        return view('user.dashboard');
-    })->name('dashboard');
+    // Route::get('dashboard', function () {
+    //     return view('user.dashboard');
+    // })->name('dashboard');
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     // Booking routes user
     Route::get('bookings', [UserBookingController::class, 'index'])->name('bookings.index');
     Route::get('bookings/create', [UserBookingController::class, 'create'])->name('bookings.create');
     Route::post('bookings', [UserBookingController::class, 'store'])->name('bookings.store');
     Route::get('bookings/{booking}', [UserBookingController::class, 'show'])->name('bookings.show');
+    Route::patch('/bookings/{booking}/cancel', [UserBookingController::class, 'cancel'])->name('bookings.cancel');
 
 });
+
+
+

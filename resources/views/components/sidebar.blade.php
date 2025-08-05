@@ -3,6 +3,11 @@
           <div class="nav">
               <div class="sb-sidenav-menu-heading">Main</div>
               @if (Auth::user()->role === 'admin')
+                  <a class="nav-link {{ Request::is('admin/dashboard*') ? 'active' : '' }}"
+                      href="{{ route('admin.dashboard') }}">
+                      <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
+                      Dashboard
+                  </a>
                   <a class="nav-link {{ Request::is('admin/rooms*') ? 'active' : '' }}"
                       href="{{ route('admin.rooms.index') }}">
                       <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
@@ -16,6 +21,11 @@
                   </a>
               @endif
               @if (Auth::user()->role === 'user')
+                  <a class="nav-link {{ Request::is('user/dashboard*') ? 'active' : '' }}"
+                      href="{{ route('user.dashboard') }}">
+                      <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
+                      Dashboard
+                  </a>
                   <a class="nav-link {{ Request::is('user/bookings*') ? 'active' : '' }}"
                       href="{{ route('user.bookings.index') }}">
                       <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>

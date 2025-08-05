@@ -29,6 +29,12 @@
                         <td>{{ $booking->status }} ({{ $booking->confirmation_status }})</td>
                         <td>
                             <a href="{{ route('user.bookings.show', $booking) }}" class="btn btn-info btn-sm">Lihat</a>
+                            @if ($booking->confirmation_status === 'tentative')
+                              <form action="{{ route('user.bookings.cancel', $booking) }}" method="POST" class="d-inline">
+                                @csrf @method('PATCH')
+                                <button class="btn btn-danger btn-sm">Cancel Booking</button>
+                            </form>
+                            @endif
                         </td>
                     </tr>
                 @empty

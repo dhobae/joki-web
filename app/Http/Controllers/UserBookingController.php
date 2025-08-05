@@ -68,4 +68,14 @@ class UserBookingController extends Controller
 
         return view('user.bookings.show', compact('booking'));
     }
+
+
+    public function cancel(Booking $booking)
+    {
+        $booking->update([
+            'confirmation_status' => 'confirmed',
+            'status' => 'canceled',
+        ]);
+        return back()->with('success', 'Booking canceled.');
+    }
 }
