@@ -9,14 +9,14 @@
             <div class="alert alert-success">{{ session('success') }}</div>
         @endif
 
-        <table class="table table-bordered">
+        <table class="table table-bordered" id="tabelMobil">
             <thead>
                 <tr>
                     <th>Plat</th>
                     <th>Merk</th>
                     <th>Jenis</th>
                     <th>Model</th>
-                    <th>Kapasitas</th>
+                    <th>Kapasitas Orang</th>
                     <th>Status</th>
                     <th>Foto</th>
                     <th>Aksi</th>
@@ -29,7 +29,7 @@
                         <td>{{ $mobil->merk->nama_merk }}</td>
                         <td>{{ $mobil->jenis->nama_jenis }}</td>
                         <td>{{ $mobil->model }}</td>
-                        <td>{{ $mobil->kapasitas }}</td>
+                        <td>{{ $mobil->kapasitas }} Orang</td>
                         <td>{{ $mobil->status_mobil }}</td>
                         <td>
                             @if ($mobil->foto_mobil)
@@ -53,3 +53,20 @@
         </table>
     </div>
 @endsection
+
+
+@push('scripts')
+    <!-- Inisialisasi DataTables -->
+    <script>
+        $(document).ready(function() {
+            $('#tabelMobil').DataTable({
+                columnDefs: [{
+                    targets: 2, // Kolom 'No'
+                    orderable: false,
+                    searchable: false,
+                    className: 'text-center',
+                }, ]
+            });
+        });
+    </script>
+@endpush

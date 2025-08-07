@@ -2,15 +2,16 @@
 
 @section('content')
     <div class="container mt-4">
-        <h3>Riwayat Peminjaman Mobil</h3>
+        <h3>Semua Riwayat Peminjaman Mobil</h3>
 
         @if (session('success'))
             <div class="alert alert-success mt-2">{{ session('success') }}</div>
         @endif
 
-        <table class="table table-bordered mt-3">
+        <table class="table table-bordered mt-3" id="tabelRiwayat">
             <thead>
                 <tr>
+                    <th>#</th>
                     <th>User</th>
                     <th>Mobil</th>
                     <th>Tanggal Pinjam</th>
@@ -22,25 +23,26 @@
             <tbody>
                 @forelse($peminjamans as $p)
                     <tr>
+                        <td class="text-center">{{ $loop->iteration }}</td>
                         <td>{{ $p->user->name }}</td>
                         <td>{{ $p->mobil->model }} ({{ $p->mobil->plat_mobil }})</td>
                         <td>{{ \Carbon\Carbon::parse($p->tanggal_pinjam)->format('d/m/Y H:i') }}</td>
                         <td>
-                            @if($p->tanggal_pengembalian)
+                            @if ($p->tanggal_pengembalian)
                                 {{ \Carbon\Carbon::parse($p->tanggal_pengembalian)->format('d/m/Y H:i') }}
                             @else
                                 <span class="text-muted">Belum dikembalikan</span>
                             @endif
                         </td>
                         <td>
-                            @if($p->status_peminjaman === 'dipinjam')
+                            @if ($p->status_peminjaman === 'dipinjam')
                                 <span class="badge bg-warning text-dark">Sedang Dipinjam</span>
                             @elseif($p->status_peminjaman === 'dikembalikan')
                                 <span class="badge bg-success">Sudah Dikembalikan</span>
                             @endif
                         </td>
                         <td>
-                            @if($p->status_peminjaman === 'dikembalikan' && $p->bukti_pengembalian)
+                            @if ($p->status_peminjaman === 'dikembalikan' && $p->bukti_pengembalian)
                                 <a href="{{ route('admin.peminjaman.bukti', $p->id) }}" class="btn btn-sm btn-info">
                                     <i class="fas fa-eye"></i> Lihat Bukti
                                 </a>
@@ -60,20 +62,25 @@
         <!-- Summary Cards -->
         <div class="row mt-4">
             <div class="col-md-4">
-                <div class="card bg-warning text-white">
-                    <div class="card-body">
-                        <h5 class="card-title">Sedang Dipinjam</h5>
-                        <h3>{{ $peminjamans->where('status_peminjaman', 'dipinjam')->count() }}</h3>
+                <a href="{{ route('admin.riwayat-sedang-dipinjam') }}" style="text-decoration: none" class="text-white">
+                    <div class="card bg-warning text-white">
+                        <div class="card-body">
+                            <h5 class="card-title">Sedang Dipinjam</h5>
+                            <h3>{{ $peminjamans->where('status_peminjaman', 'dipinjam')->count() }}</h3>
+                        </div>
                     </div>
-                </div>
+                </a>
+
             </div>
             <div class="col-md-4">
-                <div class="card bg-success text-white">
-                    <div class="card-body">
-                        <h5 class="card-title">Sudah Dikembalikan</h5>
-                        <h3>{{ $peminjamans->where('status_peminjaman', 'dikembalikan')->count() }}</h3>
+                <a href="{{ route('admin.sudah-dikembalikan') }}" style="text-decoration: none" class="text-white">
+                    <div class="card bg-success text-white">
+                        <div class="card-body">
+                            <h5 class="card-title">Sudah Dikembalikan</h5>
+                            <h3>{{ $peminjamans->where('status_peminjaman', 'dikembalikan')->count() }}</h3>
+                        </div>
                     </div>
-                </div>
+                </a>
             </div>
             <div class="col-md-4">
                 <div class="card bg-info text-white">
@@ -86,3 +93,20 @@
         </div>
     </div>
 @endsection
+
+
+@push('scripts')
+    <!-- Inisialisasi DataTables -->
+    <script>
+        $(document).ready(function() {
+            $('#tabelRiwayat').DataTable({
+                columnDefs: [{
+                    targets: 6, // Kolom 'No'
+                    orderable: false,
+                    searchable: false,
+                    className: 'text-center',
+                }, ]
+            });
+        });
+    </script>
+@endpush

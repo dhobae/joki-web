@@ -8,7 +8,7 @@
                 <h5 class="card-title">{{ $mobil->model }} ({{ $mobil->plat_mobil }})</h5>
                 <p><strong>Merk:</strong> {{ $mobil->merk->nama_merk }}</p>
                 <p><strong>Jenis:</strong> {{ $mobil->jenis->nama_jenis }}</p>
-                <p><strong>Kapasitas:</strong> {{ $mobil->kapasitas }} orang</p>
+                <p><strong>Kapasitas:</strong> {{ $mobil->kapasitas }} Orang</p>
                 <p><strong>Status:</strong> {{ $mobil->status_mobil }}</p>
                 <p><strong>Catatan:</strong> {{ $mobil->catatan_lain ?? '-' }}</p>
                 @if ($mobil->foto_mobil)

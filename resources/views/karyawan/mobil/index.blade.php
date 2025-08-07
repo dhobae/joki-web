@@ -14,7 +14,7 @@
                     <th>Merk</th>
                     <th>Jenis</th>
                     <th>Model</th>
-                    <th>Kapasitas</th>
+                    <th>Kapasitas Orang</th>
                     <th>Catatan</th>
                     <th>Status</th>
                 </tr>
@@ -34,7 +34,7 @@
                     <td>{{ $mobil->merk->nama_merk ?? '-' }}</td>
                     <td>{{ $mobil->jenis->nama_jenis ?? '-' }}</td>
                     <td>{{ $mobil->model }}</td>
-                    <td>{{ $mobil->kapasitas }} orang</td>
+                    <td>{{ $mobil->kapasitas }} Orang</td>
                     <td>{{ $mobil->catatan_lain ?? '-' }}</td>
                     <td><span class="badge bg-success">{{ $mobil->status_mobil }}</span></td>
                 </tr>

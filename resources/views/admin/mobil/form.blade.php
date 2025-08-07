@@ -36,7 +36,7 @@
 </div>
 
 <div class="form-group">
-    <label>Kapasitas</label>
+    <label>Kapasitas Orang</label>
     <input type="number" name="kapasitas" class="form-control" value="{{ old('kapasitas', $mobil->kapasitas ?? '') }}"
         required>
 </div>

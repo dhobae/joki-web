@@ -9,11 +9,17 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\PeminjamanController;
 use Illuminate\Support\Facades\Route;
 
-// Route::get("/", function () {
-//     return view('components.app');
-// })->middleware('auth');
+Route::get('/', function () {
+    if (Auth::check()) {
+        if (Auth::user()->peran === 'admin') {
+            return redirect('/admin/dashboard');
+        } elseif (Auth::user()->peran === 'karyawan') {
+            return redirect('/karyawan/dashboard');
+        }
+    }
+    return redirect('/login');
+});
 
-Route::view('/', 'home');
 
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login')->middleware('guest');
 Route::post('/login', [AuthController::class, 'login']);
@@ -35,6 +41,11 @@ Route::middleware(['auth', 'peran:admin'])->prefix('admin')->name('admin.')->gro
     Route::get('peminjaman', [AdminPeminjamanController::class, 'index'])->name('peminjaman.index');
     Route::get('peminjaman/{id}/bukti', [AdminPeminjamanController::class, 'lihatBukti'])->name('peminjaman.bukti');
 
+    // sedang dipinjam dan sedang dikembalikan
+    Route::get('peminjaman/riwayat-sedang-dipinjam', [AdminPeminjamanController::class, 'sedangDipinjamList'])->name('riwayat-sedang-dipinjam');
+    Route::get('peminjaman/riwayat-sudah-dikembalikan', [AdminPeminjamanController::class, 'sudahDikembalikanList'])->name('sudah-dikembalikan');
+
+
 });
 
 // karyawan
@@ -53,7 +64,4 @@ Route::middleware(['auth', 'peran:admin|karyawan'])->prefix('karyawan')->name('k
 
 });
 
-// belum diulah
-// Dashboard untuk admin
 
-// Dashboard untuk karyawan
