@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Jul 28, 2025 at 07:42 AM
+-- Generation Time: Aug 07, 2025 at 04:22 AM
 -- Server version: 8.0.30
 -- PHP Version: 8.2.29
 
@@ -18,8 +18,32 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Database: `pinjaman_mobil_db`
+-- Database: `faisal_peminjamanmobil`
 --
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `cache`
+--
+
+CREATE TABLE `cache` (
+  `key` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `value` mediumtext COLLATE utf8mb4_unicode_ci NOT NULL,
+  `expiration` int NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `cache_locks`
+--
+
+CREATE TABLE `cache_locks` (
+  `key` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `owner` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `expiration` int NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -39,8 +63,8 @@ CREATE TABLE `jenis` (
 --
 
 INSERT INTO `jenis` (`id`, `nama_jenis`, `created_at`, `updated_at`) VALUES
-(1, 'suv', NULL, NULL),
-(2, 'sedan', '2025-07-27 23:36:22', '2025-07-27 23:36:22');
+(1, 'Manual', NULL, NULL),
+(2, 'Automatic', NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -60,8 +84,10 @@ CREATE TABLE `merk` (
 --
 
 INSERT INTO `merk` (`id`, `nama_merk`, `created_at`, `updated_at`) VALUES
-(1, 'bmw', NULL, NULL),
-(2, 'audi', '2025-07-27 23:36:31', '2025-07-27 23:36:31');
+(4, 'Nissan', '2025-08-05 03:46:32', '2025-08-05 03:46:32'),
+(5, 'Toyota', '2025-08-05 03:46:38', '2025-08-05 03:46:38'),
+(6, 'Honda', '2025-08-05 03:46:44', '2025-08-05 03:46:44'),
+(7, 'Daihatsu', '2025-08-05 03:49:30', '2025-08-05 03:49:30');
 
 -- --------------------------------------------------------
 
@@ -84,7 +110,8 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 (2, '2025_07_22_152130_create_pinjaman_mobil_db_merk_table', 1),
 (3, '2025_07_22_153830_create_pinjaman_mobil_db_jenis_table', 1),
 (4, '2025_07_22_154202_create_pinjaman_mobil_db_mobil_table', 1),
-(5, '2025_07_22_160130_create_pinjaman_mobil_db_peminjaman_table', 1);
+(5, '2025_07_22_160130_create_pinjaman_mobil_db_peminjaman_table', 1),
+(6, '2025_08_01_152450_create_cache_table', 1);
 
 -- --------------------------------------------------------
 
@@ -111,8 +138,10 @@ CREATE TABLE `mobil` (
 --
 
 INSERT INTO `mobil` (`id`, `plat_mobil`, `id_merk`, `id_jenis`, `model`, `kapasitas`, `foto_mobil`, `catatan_lain`, `status_mobil`, `created_at`, `updated_at`) VALUES
-(1, 'DA 7123 PCF', 1, 1, 'ADwad', 1, 'foto_mobil/bIRo9c8nUGmPmos9KWzBeQaQb5rZ80FwqvcnVQCR.png', NULL, 'Tersedia', '2025-07-27 23:16:17', '2025-07-27 23:16:30'),
-(2, 'adwaad', 1, 1, 'awdwadwa', 1, 'foto_mobil/EfIbf0EW5lEdzoOytNRlUq5NnboJsSnBDh6wrUdn.png', NULL, 'Tersedia', '2025-07-27 23:17:03', '2025-07-27 23:18:37');
+(5, 'DA 9123 PAA', 4, 1, 'Nissan Z', 4, 'foto_mobil/vE7V5yiXzVrSVyyTCV6LBx2pMbvRcA9pGSiPp75L.jpg', NULL, 'Tersedia', '2025-08-05 03:48:31', '2025-08-05 03:48:31'),
+(6, 'DA 7123 PCX', 5, 1, 'Avanza 2013', 8, 'foto_mobil/qrnYEeNm2Dtuz1xcTyiNjePxtGEkmzAUdBv6xgYJ.webp', NULL, 'Tersedia', '2025-08-05 03:49:20', '2025-08-06 18:55:25'),
+(7, 'KH 2422 XT', 6, 1, 'Jazz 2018', 4, 'foto_mobil/bCTjUzy9Pdr9k14efkLDkg56hfOMmZ4jfPdomMyS.jpg', NULL, 'Tidak Tersedia', '2025-08-05 03:50:01', '2025-08-06 19:34:25'),
+(8, 'KT 9012 PX', 5, 2, 'Innova Reborn', 8, 'foto_mobil/l3n9qXNdAyfDhjLCp1omXL5GMp1K2CAGfhknjmPY.jpg', NULL, 'Tersedia', '2025-08-05 03:50:40', '2025-08-05 03:50:40');
 
 -- --------------------------------------------------------
 
@@ -138,11 +167,19 @@ CREATE TABLE `peminjaman` (
   `id_mobil` bigint UNSIGNED NOT NULL,
   `tanggal_pinjam` datetime NOT NULL,
   `tanggal_pengembalian` datetime DEFAULT NULL,
-  `status_peminjaman` enum('diajukan','disetujui','digunakan','dikembalikan','ditolak') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'diajukan',
+  `status_peminjaman` enum('dipinjam','dikembalikan') COLLATE utf8mb4_unicode_ci NOT NULL,
   `bukti_pengembalian` text COLLATE utf8mb4_unicode_ci,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `peminjaman`
+--
+
+INSERT INTO `peminjaman` (`id`, `id_user`, `id_mobil`, `tanggal_pinjam`, `tanggal_pengembalian`, `status_peminjaman`, `bukti_pengembalian`, `created_at`, `updated_at`) VALUES
+(12, 2, 6, '2025-08-07 10:53:00', '2025-08-07 02:55:25', 'dikembalikan', 'bukti_pengembalian/BJtD86G80DguRiGGt17Oln3TxQsLf1kQMFyVlpC4.jpg', '2025-08-06 18:53:17', '2025-08-06 18:55:25'),
+(13, 2, 7, '2025-08-15 11:34:00', NULL, 'dipinjam', NULL, '2025-08-06 19:34:25', '2025-08-06 19:34:25');
 
 -- --------------------------------------------------------
 
@@ -164,7 +201,8 @@ CREATE TABLE `sessions` (
 --
 
 INSERT INTO `sessions` (`id`, `user_id`, `ip_address`, `user_agent`, `payload`, `last_activity`) VALUES
-('Yc1K4QIi1ZMgim9PCQHBhpkUBEbHstezrSEPiXBG', 2, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36', 'YTo0OntzOjY6Il90b2tlbiI7czo0MDoiV2xJS0FsUWcxdjJydWo0VkMxcHE3SnlhRkx5TGcwSVJEQ3RUTnhOZCI7czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6MzM6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMC9hZG1pbi9tb2JpbCI7fXM6NTA6ImxvZ2luX3dlYl81OWJhMzZhZGRjMmIyZjk0MDE1ODBmMDE0YzdmNThlYTRlMzA5ODlkIjtpOjI7fQ==', 1753688515);
+('A5ZnJ0PS6yAB7V6Xvi2DazM2YpiXK3F0HfYOuJuG', 1, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36', 'YTo0OntzOjY6Il90b2tlbiI7czo0MDoiZVBEajVMRENUQnpPcVNjblpsYlFWdElLUDBSc0k4cTRsU2xpVU16dyI7czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6MzM6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMC9hZG1pbi9qZW5pcyI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fXM6NTA6ImxvZ2luX3dlYl81OWJhMzZhZGRjMmIyZjk0MDE1ODBmMDE0YzdmNThlYTRlMzA5ODlkIjtpOjE7fQ==', 1754540467),
+('Xan9ScgpaUQMFswl9tx88aykLr0c4bJBCtpPYUz3', 2, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36 Edg/138.0.0.0', 'YTo1OntzOjY6Il90b2tlbiI7czo0MDoiUGU1ZjMyRmc3TWdCR0hQOWVRRHdsRGJUYzVFdzRSSVNMYXhBaFBsSyI7czozOiJ1cmwiO2E6MTp7czo4OiJpbnRlbmRlZCI7czozNzoiaHR0cDovLzEyNy4wLjAuMTo4MDAwL2FkbWluL2Rhc2hib2FyZCI7fXM6OToiX3ByZXZpb3VzIjthOjE6e3M6MzoidXJsIjtzOjQxOiJodHRwOi8vMTI3LjAuMC4xOjgwMDAva2FyeWF3YW4vcGVtaW5qYW1hbiI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fXM6NTA6ImxvZ2luX3dlYl81OWJhMzZhZGRjMmIyZjk0MDE1ODBmMDE0YzdmNThlYTRlMzA5ODlkIjtpOjI7fQ==', 1754540522);
 
 -- --------------------------------------------------------
 
@@ -192,12 +230,24 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `name`, `email`, `no_telp`, `divisi`, `peran`, `foto`, `email_verified_at`, `password`, `remember_token`, `created_at`, `updated_at`) VALUES
-(1, 'ridho s', 'lesturegt@gmail.com', '081323464274', 'adwaawda', 'karyawan', NULL, NULL, '$2y$12$gS7o0KLO4yuBzKmZz8ytFOURtKs4SVQWkpe/tDqLXr9PmNjKgX/qi', NULL, '2025-07-27 22:24:48', '2025-07-27 22:24:48'),
-(2, 'Admin', 'admin@gmail.com', '08579902422', 'Pengawas', 'admin', 'none', '2025-07-27 22:38:23', '$2y$12$W13DgutX3cOwmuV6hzqpBOCH/nYDoqAQJyUO1OwrDDaVWZYdRwPyC', NULL, '2025-07-27 22:38:23', '2025-07-27 22:38:23');
+(1, 'Admin', 'admin@gmail.com', '08579902422', 'Pengawas', 'admin', 'none', '2025-08-05 03:20:54', '$2y$12$yent8iBAA.mYcMQHQQajIO4e9AsaNzmi45e6RjJcUF2iSjPOiEFYu', NULL, '2025-08-05 03:20:55', '2025-08-05 03:20:55'),
+(2, 'Karyawan', 'karyawan@gmail.com', '08579902422', 'Peminjam', 'karyawan', 'none', '2025-08-05 03:20:55', '$2y$12$50xdFV81Xr8PcKGO1NMEfO4CtoYvqdbBL7qqq2GRVGohUk2JZIwpS', NULL, '2025-08-05 03:20:55', '2025-08-05 03:20:55');
 
 --
 -- Indexes for dumped tables
 --
+
+--
+-- Indexes for table `cache`
+--
+ALTER TABLE `cache`
+  ADD PRIMARY KEY (`key`);
+
+--
+-- Indexes for table `cache_locks`
+--
+ALTER TABLE `cache_locks`
+  ADD PRIMARY KEY (`key`);
 
 --
 -- Indexes for table `jenis`
@@ -269,31 +319,31 @@ ALTER TABLE `jenis`
 -- AUTO_INCREMENT for table `merk`
 --
 ALTER TABLE `merk`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `migrations`
 --
 ALTER TABLE `migrations`
-  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `mobil`
 --
 ALTER TABLE `mobil`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT for table `peminjaman`
 --
 ALTER TABLE `peminjaman`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- Constraints for dumped tables
