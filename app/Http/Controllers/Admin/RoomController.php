@@ -15,6 +15,13 @@ class RoomController extends Controller
         return view('admin.rooms.index', compact('rooms'));
     }
 
+    public function show(string $id)
+    {
+        $room = Room::findOrFail($id);
+
+        return view('admin.rooms.show', compact('room'));
+    }
+
     public function create()
     {
         return view('admin.rooms.create');

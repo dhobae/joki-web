@@ -188,9 +188,35 @@ class DashboardController extends Controller
     {
         $startOfMonth = $currentDate->copy()->startOfMonth();
         $endOfMonth = $currentDate->copy()->endOfMonth();
+        $now = Carbon::now();
+
+        // Query booking bulan ini dengan kondisi yang sama seperti di method index
+        $bookingsThisMonth = Booking::where(function ($query) use ($startOfMonth, $endOfMonth) {
+            $query->whereBetween('checkin_date', [$startOfMonth, $endOfMonth])
+                ->orWhereBetween('checkout_date', [$startOfMonth, $endOfMonth])
+                ->orWhere(function ($q) use ($startOfMonth, $endOfMonth) {
+                    $q->where('checkin_date', '<=', $startOfMonth)
+                        ->where('checkout_date', '>=', $endOfMonth);
+                });
+        })->count();
+
+        // Get user's active bookings (room yang sedang dibooking oleh user login)
+        $userActiveRooms = 0;
+        if (auth()->check()) {
+            $userActiveRooms = Booking::where('user_id', auth()->id())
+                ->where('checkin_date', '<=', $now)
+                ->where('checkout_date', '>=', $now)
+                ->whereIn('status', ['pending', 'confirmed', 'used']) // Status aktif
+                ->whereNotIn('status', ['done', 'canceled']) // Exclude status selesai
+                ->distinct('room_id')
+                ->count('room_id');
+        }
 
         return [
-            'total_bookings_this_month' => Booking::whereBetween('checkin_date', [$startOfMonth, $endOfMonth])->count(),
+            'total_bookings_this_month' => $bookingsThisMonth,
+            'total_bookings' => $bookingsThisMonth, // Gunakan nilai yang sama
+            'all_time_bookings' => Booking::count(), // Total semua booking
+            'user_active_rooms' => $userActiveRooms, // Room yang sedang dibooking user
             'pending_bookings' => Booking::where('status', 'pending')->count(),
             'confirmed_bookings' => Booking::where('confirmation_status', 'confirmed')->count(),
             'tentative_bookings' => Booking::where('confirmation_status', 'tentative')->count(),

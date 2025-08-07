@@ -14,6 +14,14 @@
                     </div>
                 </div>
             </div>
+            <div class="col-md-3">
+                <div class="card text-white bg-success">
+                    <div class="card-body">
+                        <h5 class="card-title">Room yang Sedang Kamu Booking</h5>
+                        <p class="card-text">{{ $stats['user_active_rooms'] ?? 0 }}</p>
+                    </div>
+                </div>
+            </div>
             {{-- Tambahkan statistik lain jika ada --}}
         </div>
 

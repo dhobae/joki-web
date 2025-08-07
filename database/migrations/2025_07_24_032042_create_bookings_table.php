@@ -32,6 +32,7 @@ return new class extends Migration
             $table->text('description');
             $table->enum('type', ['internal', 'eksternal']);
             $table->boolean('fullday')->default(0); // tinyint(1)
+            $table->string('type_pemesanan')->default('luring');
             $table->enum('confirmation_status', ['tentative', 'confirmed'])->default('tentative'); // konfirmasi dari admin
             $table->timestamps();
         });

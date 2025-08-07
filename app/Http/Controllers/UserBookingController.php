@@ -13,7 +13,7 @@ class UserBookingController extends Controller
         $bookings = Booking::with('room')
             ->where('user_id', Auth::id())
             ->latest()
-            ->paginate(10);
+            ->get();
 
         return view('user.bookings.index', compact('bookings'));
     }
@@ -35,6 +35,7 @@ class UserBookingController extends Controller
             'person_number' => 'required|integer|min:1',
             'type' => 'required|in:internal,eksternal',
             'fullday' => 'boolean',
+            'type_pemesanan'
         ]);
 
         $room = Room::findOrFail($request->room_id);

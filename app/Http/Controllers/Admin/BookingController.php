@@ -11,7 +11,7 @@ class BookingController extends Controller
 {
     public function index()
     {
-        $bookings = Booking::with('user', 'room')->latest()->paginate(10);
+        $bookings = Booking::with('user', 'room')->latest()->get();
         return view('admin.bookings.index', compact('bookings'));
     }
 

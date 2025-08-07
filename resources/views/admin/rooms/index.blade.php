@@ -42,6 +42,7 @@
                                 </td>
                                 <td>{{ $room->is_active ? 'Aktif' : 'Nonaktif' }}</td>
                                 <td>
+                                    <a href="{{ route('admin.rooms.show', $room->id) }}" class="btn btn-sm btn-info">Detail</a>
                                     <a href="{{ route('admin.rooms.edit', $room) }}" class="btn btn-sm btn-warning">Edit</a>
                                     <form action="{{ route('admin.rooms.destroy', $room) }}" method="POST"
                                         style="display:inline;">
